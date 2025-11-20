@@ -11,16 +11,6 @@ import models
 
 router = APIRouter()
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-        
-        
-db_dependency = Annotated[Session, Depends(get_db)]
-
 class TodoBase(BaseModel):
     title: str = Field(min_length=3)
     description: str = Field(min_length=3, max_length=100)
@@ -35,6 +25,16 @@ class Todo(TodoBase):
     
     class Config:
         from_attributes = True
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+        
+db_dependency = Annotated[Session, Depends(get_db)]
 
 
 @router.get("/", response_model=list[Todo])
